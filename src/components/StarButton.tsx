@@ -3,6 +3,40 @@ import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const STORAGE_KEY = 'portfolio-star-given';
+const COUNT_KEY = 'portfolio-star-count';
+
+// Safe localStorage helpers with error handling
+const safeGetItem = (key: string): string | null => {
+  try {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.warn('localStorage access failed:', error);
+    return null;
+  }
+};
+
+const safeSetItem = (key: string, value: string): boolean => {
+  try {
+    if (typeof window === 'undefined') return false;
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    console.warn('localStorage write failed:', error);
+    return false;
+  }
+};
+
+const safeRemoveItem = (key: string): boolean => {
+  try {
+    if (typeof window === 'undefined') return false;
+    localStorage.removeItem(key);
+    return true;
+  } catch (error) {
+    console.warn('localStorage remove failed:', error);
+    return false;
+  }
+};
 
 export function StarButton() {
   const [starred, setStarred] = useState(false);
@@ -10,29 +44,32 @@ export function StarButton() {
 
   useEffect(() => {
     // Check if user has already given a star
-    const hasStarred = localStorage.getItem(STORAGE_KEY) === 'true';
+    const hasStarred = safeGetItem(STORAGE_KEY) === 'true';
     setStarred(hasStarred);
 
     // Get current star count from localStorage
-    const count = parseInt(localStorage.getItem('portfolio-star-count') || '0', 10);
-    setStarCount(count);
+    const countStr = safeGetItem(COUNT_KEY) || '0';
+    const count = parseInt(countStr, 10);
+    if (!isNaN(count)) {
+      setStarCount(count);
+    }
   }, []);
 
   const handleStarClick = () => {
     if (starred) {
       // Remove star
-      localStorage.removeItem(STORAGE_KEY);
+      safeRemoveItem(STORAGE_KEY);
       setStarred(false);
       const newCount = Math.max(0, starCount - 1);
       setStarCount(newCount);
-      localStorage.setItem('portfolio-star-count', newCount.toString());
+      safeSetItem(COUNT_KEY, newCount.toString());
     } else {
       // Add star
-      localStorage.setItem(STORAGE_KEY, 'true');
+      safeSetItem(STORAGE_KEY, 'true');
       setStarred(true);
       const newCount = starCount + 1;
       setStarCount(newCount);
-      localStorage.setItem('portfolio-star-count', newCount.toString());
+      safeSetItem(COUNT_KEY, newCount.toString());
     }
   };
 
