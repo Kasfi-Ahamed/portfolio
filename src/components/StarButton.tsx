@@ -3,9 +3,7 @@ import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const STORAGE_KEY = 'portfolio-star-given';
-const COUNT_API_NAMESPACE = 'kasfi-portfolio';
-const COUNT_API_KEY = 'portfolio-stars';
-const COUNT_API_URL = 'https://api.countapi.xyz';
+const API_URL = '/api/stars';
 
 // Safe localStorage helpers with error handling
 const safeGetItem = (key: string): string | null => {
@@ -29,53 +27,41 @@ const safeSetItem = (key: string, value: string): boolean => {
   }
 };
 
-// Fetch global star count from CountAPI
+// Fetch global star count from API
 const fetchStarCount = async (): Promise<number> => {
   try {
-    const response = await fetch(
-      `${COUNT_API_URL}/get/${COUNT_API_NAMESPACE}/${COUNT_API_KEY}`
-    );
+    const response = await fetch(API_URL);
     
     if (!response.ok) {
-      // Counter doesn't exist yet, return 0
+      // If API is not available, return 0
       return 0;
     }
 
     const data = await response.json();
-    return data.value || 0;
+    return data.count || 0;
   } catch (error) {
     console.warn('Failed to fetch star count:', error);
     return 0;
   }
 };
 
-// Increment global star count via CountAPI
+// Increment global star count via API
 const incrementStarCount = async (): Promise<number | null> => {
   try {
-    // Try to hit (increment) the counter first
-    let response = await fetch(
-      `${COUNT_API_URL}/hit/${COUNT_API_NAMESPACE}/${COUNT_API_KEY}`
-    );
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    // If counter doesn't exist (404), create it first
-    if (response.status === 404 || !response.ok) {
-      // Create the counter with initial value of 1
-      const createUrl = `${COUNT_API_URL}/create?namespace=${COUNT_API_NAMESPACE}&key=${COUNT_API_KEY}&value=1`;
-      const createResponse = await fetch(createUrl);
-      
-      if (createResponse.ok) {
-        const createData = await createResponse.json();
-        return createData.value || 1;
-      }
-      
-      // If create also fails, return null
-      console.error('Failed to create counter:', await createResponse.text());
+    if (!response.ok) {
+      console.error('Failed to increment star count:', response.statusText);
       return null;
     }
 
-    // Counter exists and was incremented successfully
     const data = await response.json();
-    return data.value || null;
+    return data.count || null;
   } catch (error) {
     console.error('Failed to increment star count:', error);
     return null;
