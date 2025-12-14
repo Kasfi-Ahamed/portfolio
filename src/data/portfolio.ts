@@ -102,6 +102,22 @@ export const recommendations: Recommendation[] = [
 
 export const projects: Project[] = [
   {
+    slug: 'book-api',
+    title: 'Book API',
+    description: 'RESTful API for managing books with Docker containerization and CI/CD pipeline integration.',
+    longDescription: 'A production-ready REST API for book management built with Node.js and JavaScript. The project includes comprehensive testing, Docker containerization for easy deployment, and Jenkins CI/CD pipeline integration. Features include book CRUD operations, proper error handling, and scalable architecture designed for production environments.',
+    category: 'Web',
+    techStack: ['JavaScript', 'Node.js', 'REST API', 'Docker', 'Jenkins', 'CI/CD', 'Testing'],
+    githubUrl: 'https://github.com/Kasfi-Ahamed/book-api',
+    liveUrl: '#',
+    highlights: [
+      'Built RESTful API with comprehensive CRUD operations',
+      'Implemented Docker containerization for deployment',
+      'Set up CI/CD pipeline with Jenkins for automated testing and deployment',
+    ],
+    images: ['/project-placeholder.jpg'],
+  },
+  {
     slug: 'travel-bot',
     title: 'Travel Bot',
     description: 'AI-powered travel assistant bot for planning trips and providing travel recommendations.',
