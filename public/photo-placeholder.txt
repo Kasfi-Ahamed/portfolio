@@ -1,0 +1,1 @@
+Place your photo at /public/photo.jpg (recommended: 400x400px or larger, square format)
