@@ -3,7 +3,7 @@ import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const STORAGE_KEY = 'portfolio-star-given';
-const COUNT_KEY = 'portfolio-star-count';
+const API_URL = '/api/stars';
 
 // Safe localStorage helpers with error handling
 const safeGetItem = (key: string): string | null => {
@@ -27,49 +27,76 @@ const safeSetItem = (key: string, value: string): boolean => {
   }
 };
 
-const safeRemoveItem = (key: string): boolean => {
+// Fetch global star count from API
+const fetchStarCount = async (): Promise<number> => {
   try {
-    if (typeof window === 'undefined') return false;
-    localStorage.removeItem(key);
-    return true;
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error('Failed to fetch star count');
+    const data = await response.json();
+    return data.count || 0;
   } catch (error) {
-    console.warn('localStorage remove failed:', error);
-    return false;
+    console.warn('Failed to fetch star count:', error);
+    return 0;
+  }
+};
+
+// Increment global star count via API
+const incrementStarCount = async (): Promise<number | null> => {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('Failed to increment star count');
+    const data = await response.json();
+    return data.count || null;
+  } catch (error) {
+    console.warn('Failed to increment star count:', error);
+    return null;
   }
 };
 
 export function StarButton() {
   const [starred, setStarred] = useState(false);
   const [starCount, setStarCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user has already given a star
+    // Check if user has already given a star (local check)
     const hasStarred = safeGetItem(STORAGE_KEY) === 'true';
     setStarred(hasStarred);
 
-    // Get current star count from localStorage
-    const countStr = safeGetItem(COUNT_KEY) || '0';
-    const count = parseInt(countStr, 10);
-    if (!isNaN(count)) {
+    // Fetch global star count from API
+    const loadStarCount = async () => {
+      setLoading(true);
+      const count = await fetchStarCount();
       setStarCount(count);
-    }
+      setLoading(false);
+    };
+
+    loadStarCount();
   }, []);
 
-  const handleStarClick = () => {
+  const handleStarClick = async () => {
     if (starred) {
-      // Remove star
-      safeRemoveItem(STORAGE_KEY);
-      setStarred(false);
-      const newCount = Math.max(0, starCount - 1);
+      // User wants to remove star - but we'll keep it simple and not allow removal
+      // to maintain global count integrity
+      return;
+    }
+
+    // Add star
+    safeSetItem(STORAGE_KEY, 'true');
+    setStarred(true);
+    
+    // Increment global count via API
+    const newCount = await incrementStarCount();
+    if (newCount !== null) {
       setStarCount(newCount);
-      safeSetItem(COUNT_KEY, newCount.toString());
     } else {
-      // Add star
-      safeSetItem(STORAGE_KEY, 'true');
-      setStarred(true);
-      const newCount = starCount + 1;
-      setStarCount(newCount);
-      safeSetItem(COUNT_KEY, newCount.toString());
+      // Fallback: increment locally if API fails
+      setStarCount((prev) => prev + 1);
     }
   };
 
@@ -86,7 +113,9 @@ export function StarButton() {
       aria-label={starred ? 'Remove star' : 'Give star'}
     >
       <Star className={`w-4 h-4 ${starred ? 'fill-primary' : ''}`} />
-      <span className="text-sm font-semibold">{starCount}</span>
+      <span className="text-sm font-semibold">
+        {loading ? '...' : starCount}
+      </span>
     </motion.button>
   );
 }
