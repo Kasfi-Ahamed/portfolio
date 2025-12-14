@@ -52,28 +52,32 @@ const fetchStarCount = async (): Promise<number> => {
 // Increment global star count via CountAPI
 const incrementStarCount = async (): Promise<number | null> => {
   try {
-    const response = await fetch(
+    // Try to hit (increment) the counter first
+    let response = await fetch(
       `${COUNT_API_URL}/hit/${COUNT_API_NAMESPACE}/${COUNT_API_KEY}`
     );
 
-    if (!response.ok) {
-      // Counter doesn't exist, create it
-      const createResponse = await fetch(
-        `${COUNT_API_URL}/create?namespace=${COUNT_API_NAMESPACE}&key=${COUNT_API_KEY}&value=1`
-      );
+    // If counter doesn't exist (404), create it first
+    if (response.status === 404 || !response.ok) {
+      // Create the counter with initial value of 1
+      const createUrl = `${COUNT_API_URL}/create?namespace=${COUNT_API_NAMESPACE}&key=${COUNT_API_KEY}&value=1`;
+      const createResponse = await fetch(createUrl);
       
       if (createResponse.ok) {
         const createData = await createResponse.json();
         return createData.value || 1;
       }
       
-      throw new Error('Failed to create counter');
+      // If create also fails, return null
+      console.error('Failed to create counter:', await createResponse.text());
+      return null;
     }
 
+    // Counter exists and was incremented successfully
     const data = await response.json();
     return data.value || null;
   } catch (error) {
-    console.warn('Failed to increment star count:', error);
+    console.error('Failed to increment star count:', error);
     return null;
   }
 };
@@ -91,9 +95,15 @@ export function StarButton() {
     // Fetch global star count from API
     const loadStarCount = async () => {
       setLoading(true);
-      const count = await fetchStarCount();
-      setStarCount(count);
-      setLoading(false);
+      try {
+        const count = await fetchStarCount();
+        setStarCount(count);
+      } catch (error) {
+        console.error('Error loading star count:', error);
+        setStarCount(0);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadStarCount();
@@ -106,17 +116,33 @@ export function StarButton() {
       return;
     }
 
-    // Add star
+    // Prevent double-clicking
+    if (loading) return;
+
+    // Add star locally first for immediate feedback
     safeSetItem(STORAGE_KEY, 'true');
     setStarred(true);
     
+    // Optimistically update the count for immediate UI feedback
+    const optimisticCount = starCount + 1;
+    setStarCount(optimisticCount);
+    
     // Increment global count via API
-    const newCount = await incrementStarCount();
-    if (newCount !== null) {
-      setStarCount(newCount);
-    } else {
-      // Fallback: increment locally if API fails
-      setStarCount((prev) => prev + 1);
+    try {
+      const newCount = await incrementStarCount();
+      if (newCount !== null) {
+        // Update with the actual count from API
+        setStarCount(newCount);
+      } else {
+        // If API fails, refresh the count from server to get accurate value
+        const refreshedCount = await fetchStarCount();
+        setStarCount(refreshedCount);
+      }
+    } catch (error) {
+      console.error('Error incrementing star count:', error);
+      // On error, refresh to get the actual count
+      const refreshedCount = await fetchStarCount();
+      setStarCount(refreshedCount);
     }
   };
 
