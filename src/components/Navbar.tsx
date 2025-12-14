@@ -95,8 +95,9 @@ export function Navbar() {
               <StarButton />
               <span className="text-xs text-text-secondary">Love my Portfolio</span>
             </div>
-            <div className="md:hidden flex items-center gap-1.5">
+            <div className="md:hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background-secondary border border-border">
               <StarButton />
+              <span className="text-xs text-text-secondary">Love my Portfolio</span>
             </div>
             <ThemeToggle />
             <a
@@ -111,7 +112,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile menu */}
-        <div className="md:hidden pb-4 space-y-3">
+        <div className="md:hidden pb-4">
           <div className="flex items-center gap-4 overflow-x-auto">
             {navLinks.map((link) => (
                 <Link
@@ -129,10 +130,6 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background-secondary border border-border w-fit">
-            <StarButton />
-            <span className="text-xs text-text-secondary">Love my Portfolio</span>
           </div>
         </div>
       </div>
