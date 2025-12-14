@@ -95,6 +95,9 @@ export function Navbar() {
               <StarButton />
               <span className="text-xs text-text-secondary">Love my Portfolio</span>
             </div>
+            <div className="md:hidden flex items-center gap-1.5">
+              <StarButton />
+            </div>
             <ThemeToggle />
             <a
               href={personalInfo.resume}
@@ -108,23 +111,29 @@ export function Navbar() {
         </div>
 
         {/* Mobile menu */}
-        <div className="md:hidden pb-4 flex items-center gap-4 overflow-x-auto">
-          {navLinks.map((link) => (
-              <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => {
-                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-              }}
-              className={`text-sm font-medium whitespace-nowrap transition-colors ${
-                location.pathname === link.path
-                  ? 'text-primary'
-                  : 'text-text-secondary hover:text-text'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <div className="md:hidden pb-4 space-y-3">
+          <div className="flex items-center gap-4 overflow-x-auto">
+            {navLinks.map((link) => (
+                <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => {
+                  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                }}
+                className={`text-sm font-medium whitespace-nowrap transition-colors ${
+                  location.pathname === link.path
+                    ? 'text-primary'
+                    : 'text-text-secondary hover:text-text'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background-secondary border border-border w-fit">
+            <StarButton />
+            <span className="text-xs text-text-secondary">Love my Portfolio</span>
+          </div>
         </div>
       </div>
     </motion.nav>
