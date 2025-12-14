@@ -92,21 +92,41 @@ export function StarButton() {
     const hasStarred = safeGetItem(STORAGE_KEY) === 'true';
     setStarred(hasStarred);
 
+    let isMounted = true;
+
     // Fetch global star count from API
     const loadStarCount = async () => {
       setLoading(true);
       try {
         const count = await fetchStarCount();
-        setStarCount(count);
+        if (isMounted) {
+          setStarCount(count);
+        }
       } catch (error) {
         console.error('Error loading star count:', error);
-        setStarCount(0);
+        if (isMounted) {
+          setStarCount(0);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
+    // Set a timeout to ensure loading doesn't stay forever
+    const timeout = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 5000);
+
     loadStarCount();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleStarClick = async () => {
@@ -160,7 +180,7 @@ export function StarButton() {
     >
       <Star className={`w-4 h-4 ${starred ? 'fill-primary' : ''}`} />
       <span className="text-sm font-semibold">
-        {loading ? '...' : starCount}
+        {loading ? '0' : starCount}
       </span>
     </motion.button>
   );

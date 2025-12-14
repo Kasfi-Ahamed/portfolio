@@ -102,8 +102,28 @@ export function About() {
                       <h3 className="text-xl font-semibold">{exp.title}</h3>
                       <span className="text-sm text-text-secondary">{exp.period}</span>
                     </div>
-                    <p className="text-primary mb-2">{exp.company}</p>
-                    <p className="text-text-secondary">{exp.description}</p>
+                    <p className="text-primary mb-4">
+                      {exp.company}
+                      {exp.location && ` • ${exp.location}`}
+                    </p>
+                    {Array.isArray(exp.description) ? (
+                      <ul className="space-y-2 mb-4">
+                        {exp.description.map((item, idx) => (
+                          <li key={idx} className="text-text-secondary flex items-start gap-2">
+                            <span className="text-primary mt-1.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-text-secondary mb-4">{exp.description}</p>
+                    )}
+                    {exp.keyAchievement && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-sm font-semibold text-primary mb-1">Key Achievement:</p>
+                        <p className="text-sm text-text-secondary">{exp.keyAchievement}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

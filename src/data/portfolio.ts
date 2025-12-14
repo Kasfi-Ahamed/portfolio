@@ -36,6 +36,15 @@ export interface Interest {
   name: string;
 }
 
+export interface Experience {
+  title: string;
+  company: string;
+  period: string;
+  location?: string;
+  description: string | string[];
+  keyAchievement?: string;
+}
+
 export interface ResearchPaper {
   title: string;
   authors: string;
@@ -252,19 +261,38 @@ export const experience = [
     title: 'Ambassador',
     company: 'AllCrew',
     period: 'Sep 2025 - Present',
-    description: 'Representing the AllCrew brand in student communities and events. Engaging with students to promote app features, assist with onboarding, and provide customer support. Offering feedback to improve user experience and community engagement. Boosted app adoption among students by 30% through proactive onboarding and community engagement.',
+    location: 'Melbourne, VIC',
+    description: [
+      'Represented the AllCrew brand in student communities and events.',
+      'Engaged with students to promote app features and assist with onboarding.',
+      'Provided customer support, answered product enquiries, and encouraged user adoption.',
+      'Offered feedback to improve user experience and community engagement.',
+    ],
+    keyAchievement: 'Boosted app adoption among students by 30% through proactive onboarding, community engagement, and consistent product support.',
   },
   {
     title: 'Network & Security Engineer',
     company: 'Computer Services Limited',
     period: 'Jul 2023 - Oct 2024',
-    description: 'Designed and deployed automation scripts for network monitoring and issue alerts. Administered and secured digital election systems for national infrastructure. Managed data centres with 99.9% uptime and enhanced disaster recovery systems. Worked extensively in Linux-based environments for server configuration, scripting, and automation. Improved incident response speed by 20% through automated monitoring and alerting scripts.',
+    location: 'Dhaka, Bangladesh',
+    description: [
+      'Designed and deployed automation scripts for network monitoring and issue alerts, improving incident response speed by 20%.',
+      'Administered and secured digital election systems for national infrastructure.',
+      'Managed data centres with 99.9% uptime and enhanced disaster recovery systems.',
+      'Worked extensively in Linux-based environments for server configuration, scripting, and automation.',
+    ],
+    keyAchievement: 'Improved incident response speed by 20% through automated monitoring and alerting scripts.',
   },
   {
     title: 'Campus Leader',
     company: 'Applink (Banglalink)',
     period: 'Sep 2022 - Dec 2023',
-    description: 'Led student engagement and digital activation campaigns, improving product adoption across university campuses. Conducted product research, user feedback collection, and market trend analysis to support product development teams. Increased student engagement by 45% through targeted campus and digital campaigns.',
+    location: 'Dhaka, Bangladesh',
+    description: [
+      'Led student engagement and digital activation campaigns, improving product adoption across university campuses.',
+      'Conducted product research, user feedback collection, and market trend analysis to support product development teams.',
+    ],
+    keyAchievement: 'Increased student engagement by 45% through targeted campus and digital campaigns.',
   },
 ];
 
