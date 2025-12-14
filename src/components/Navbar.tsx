@@ -51,7 +51,13 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-3 text-xl font-bold text-text hover:text-primary transition-colors">
+          <Link 
+            to="/" 
+            onClick={() => {
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
+            className="flex items-center gap-3 text-xl font-bold text-text hover:text-primary transition-colors"
+          >
             {personalInfo.photo && (showPhoto || location.pathname !== '/') && (
               <img
                 src={personalInfo.photo}
@@ -70,6 +76,9 @@ export function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
+                onClick={() => {
+                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                }}
                 className={`text-sm font-medium transition-colors ${
                   location.pathname === link.path
                     ? 'text-primary'
@@ -104,6 +113,9 @@ export function Navbar() {
             <Link
               key={link.path}
               to={link.path}
+              onClick={() => {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+              }}
               className={`text-sm font-medium whitespace-nowrap transition-colors ${
                 location.pathname === link.path
                   ? 'text-primary'
