@@ -69,11 +69,22 @@ export function Home() {
 
             {/* Currently pills */}
             <div className="flex flex-wrap justify-center gap-3 mb-12">
-              {['AI/ML Engineering', 'Software Development'].map((pill) => (
-                <Badge key={pill} variant="primary" className="text-sm">
-                  {pill}
+              <Link
+                to="/projects?category=AI/ML"
+                className="inline-block"
+              >
+                <Badge variant="primary" className="text-sm cursor-pointer hover:opacity-80 transition-opacity">
+                  AI/ML Engineering
                 </Badge>
-              ))}
+              </Link>
+              <Link
+                to="/projects?category=Web"
+                className="inline-block"
+              >
+                <Badge variant="primary" className="text-sm cursor-pointer hover:opacity-80 transition-opacity">
+                  Software Development
+                </Badge>
+              </Link>
             </div>
 
             {/* CTA Buttons */}

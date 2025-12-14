@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { projects, personalInfo } from '../data/portfolio';
 import { SectionHeading } from '../components/SectionHeading';
@@ -9,8 +10,19 @@ import { ProjectCard } from '../components/ProjectCard';
 type Category = 'All' | 'AI/ML' | 'Web';
 
 export function Projects() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category') as Category | null;
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  const [selectedCategory, setSelectedCategory] = useState<Category>(
+    categoryParam && ['All', 'AI/ML', 'Web'].includes(categoryParam) ? categoryParam : 'All'
+  );
+
+  useEffect(() => {
+    if (categoryParam && ['All', 'AI/ML', 'Web'].includes(categoryParam)) {
+      setSelectedCategory(categoryParam as Category);
+    }
+  }, [categoryParam]);
 
   const categories: Category[] = ['All', 'AI/ML', 'Web'];
 
@@ -60,7 +72,14 @@ export function Projects() {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  if (category === 'All') {
+                    setSearchParams({});
+                  } else {
+                    setSearchParams({ category });
+                  }
+                }}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   selectedCategory === category
                     ? 'bg-primary text-white'
